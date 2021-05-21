@@ -4,7 +4,8 @@ import {
   Text,
   StyleSheet,
   TextInput,
-  FlatList
+  FlatList,
+  Platform
 } from 'react-native';
 import { Button } from '../../components/Button';
 import { SkillCard } from '../../components/SkillCard';
@@ -21,12 +22,21 @@ export function Home(){
   const [gretting , setGretting] = useState('');
 
   function handleAddNewSkill(){
+    if (newSkill === ''){
+      return;
+    }
+
     const data = {
       id: String(new Date().getTime()),
       name: newSkill
     }
 
     setNewMySkills(oldState => [...oldState, data])
+    setNewSkill('')
+  }
+  function handleDeleteSkill(id : string){
+    setNewMySkills(oldState => oldState.filter(item =>
+      item.id !== id))
   }
 
   useEffect(() => {
@@ -60,9 +70,11 @@ export function Home(){
         placeholder="New skill"
         placeholderTextColor="#555"
         onChangeText={setNewSkill}
+        value={newSkill}
       />
 
       <Button
+        title="Adicionar"
         onPress={handleAddNewSkill}
       />
 
@@ -77,6 +89,9 @@ export function Home(){
         renderItem={({item})=> (
           <SkillCard 
             skill={item.name}
+            onPress={
+              () => handleDeleteSkill(item.id)
+            }
           />
         )}
       />
@@ -92,7 +107,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#121015',
     paddingHorizontal: 20,
-    paddingVertical: 50
+    paddingVertical: 40
   },
   title:{
     fontSize: 24,
